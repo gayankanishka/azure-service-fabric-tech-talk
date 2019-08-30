@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzureServiceFabric.TechTalk.Main.API\AzureServiceFabric.TechTalk.Main.API.csproj" />
+    <ProjectReference Include="..\AzureServiceFabric.TechTalk.Main.Processor\AzureServiceFabric.TechTalk.Main.Processor.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup>
