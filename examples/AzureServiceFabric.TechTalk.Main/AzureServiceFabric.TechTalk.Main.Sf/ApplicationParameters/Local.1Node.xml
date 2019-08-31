@@ -4,5 +4,6 @@
     <Parameter Name="AzureServiceFabric.TechTalk.Main.Processor_InstanceCount" Value="1" />
     <Parameter Name="AzureServiceFabric.TechTalk.Main.API_ASPNETCORE_ENVIRONMENT" Value="Development" />
     <Parameter Name="AzureServiceFabric.TechTalk.Main.API_InstanceCount" Value="1" />
+    <Parameter Name="StorageConnectionString" Value="UseDevelopmentStorage=true;" />
   </Parameters>
 </Application>
