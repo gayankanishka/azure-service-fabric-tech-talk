@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 
@@ -56,5 +57,25 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
             await queue.DeleteMessageAsync(cloudQueueMessage);
             return cloudQueueMessage;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<CloudQueueMessage>> GetQueueMessagesAsync(string queueName, int messageCount)
+        {
+            return await queue.GetMessagesAsync(messageCount);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task DeleteQueueMessageAsync(CloudQueueMessage cloudQueueMessage)
+        {
+            await queue.DeleteMessageAsync(cloudQueueMessage);
+        } 
     }
 }

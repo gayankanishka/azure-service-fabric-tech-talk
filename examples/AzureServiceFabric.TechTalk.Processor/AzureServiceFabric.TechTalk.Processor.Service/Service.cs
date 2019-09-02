@@ -16,6 +16,10 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
     /// </summary>
     internal sealed class Service : StatelessService
     {
+        private const double QUEUE_PROCESSING_INTERVAL = 10;
+        private ServiceProvider serviceProvider;
+        private IngestProcessor ingestProcessor;
+
         public Service(StatelessServiceContext context)
             : base(context)
         { }
@@ -29,13 +33,22 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
             // TODO: Need to get these configs from table storage
             string storageAccountKey = "UseDevelopmentStorage=true;";
             string queuename = "messagequeue";
-
+            // Add your twilio account ID's
+            string accountSid = "AC8bcda9120492208f3242accc1ebdd290";
+            string authToken = "103f5b05252c252397db7138636f263b";
+           
             IServiceCollection serviceCollection = new ServiceCollection();
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
             cloudStorage.CreateQueueIfNotFoundAsync(queuename);
 
-            serviceCollection.AddSingleton(cloudStorage);
+            ITwilioEngine twilioEngine = new TwilioEngine(accountSid, authToken);
+
+            serviceCollection.AddSingleton(cloudStorage)
+                .AddSingleton(twilioEngine)
+                .AddTransient<IngestProcessor, IngestProcessor>();
+
+            serviceProvider = serviceCollection.BuildServiceProvider();
 
             return new ServiceInstanceListener[0];
         }
@@ -46,11 +59,13 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
+            ingestProcessor = serviceProvider.GetService<IngestProcessor>();
+
             while (true)
             {
                 try
                 {
-
+                    await ingestProcessor.ProcessIngestMessages();
                 }
                 catch (Exception exception)
                 {
@@ -59,7 +74,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(QUEUE_PROCESSING_INTERVAL), cancellationToken);
             }
         }
     }

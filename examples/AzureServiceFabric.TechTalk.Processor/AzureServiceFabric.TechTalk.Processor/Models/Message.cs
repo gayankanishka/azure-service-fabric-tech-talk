@@ -15,7 +15,6 @@ namespace AzureServiceFabric.TechTalk.Processor.Models
         [Required]
         public string Body { get; set; }
 
-        [JsonIgnore]
         public Guid TransactionId { get; set; }
     }
 }
