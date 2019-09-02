@@ -34,8 +34,8 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
             string storageAccountKey = "UseDevelopmentStorage=true;";
             string queuename = "messagequeue";
             // Add your twilio account ID's
-            string accountSid = "AC8bcda9120492208f3242accc1ebdd290";
-            string authToken = "103f5b05252c252397db7138636f263b";
+            string accountSid = "";
+            string authToken = "";
            
             IServiceCollection serviceCollection = new ServiceCollection();
 
