@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace AzureServiceFabric.TechTalk.Ingest.Models
@@ -14,6 +15,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.Models
         [Required]
         public string Body { get; set; }
 
+        [JsonIgnore]
         public Guid TransactionId { get; set; }
     }
 }
