@@ -4,6 +4,8 @@ using System.Fabric;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AzureServiceFabric.TechTalk.Processor.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
@@ -24,6 +26,17 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
+            // TODO: Need to get these configs from table storage
+            string storageAccountKey = "UseDevelopmentStorage=true;";
+            string queuename = "messagequeue";
+
+            IServiceCollection serviceCollection = new ServiceCollection();
+
+            ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
+            cloudStorage.CreateQueueIfNotFoundAsync(queuename);
+
+            serviceCollection.AddSingleton(cloudStorage);
+
             return new ServiceInstanceListener[0];
         }
 
