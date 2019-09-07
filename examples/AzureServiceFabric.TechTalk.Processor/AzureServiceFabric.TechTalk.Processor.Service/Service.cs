@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AzureServiceFabric.TechTalk.Processor.Core;
@@ -32,10 +31,10 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         {
             // TODO: Need to get these configs from table storage
             string storageAccountKey = "UseDevelopmentStorage=true;";
-            string queuename = "messagequeue";
+            string queuename = "messagesqueue";
             // Add your twilio account ID's
-            string accountSid = "AC8bcda9120492208f3242accc1ebdd290";
-            string authToken = "103f5b05252c252397db7138636f263b";
+            string accountSid = "";
+            string authToken = "";
            
             IServiceCollection serviceCollection = new ServiceCollection();
 
@@ -67,7 +66,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
                 {
                     await ingestProcessor.ProcessIngestMessages();
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     // Not throwing in order to run the service infinity
                 }

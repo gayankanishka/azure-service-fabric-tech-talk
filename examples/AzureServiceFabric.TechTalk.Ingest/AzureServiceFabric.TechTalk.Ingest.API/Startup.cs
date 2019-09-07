@@ -24,7 +24,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
         {
             // TODO: get from config
             string storageAccountKey = "UseDevelopmentStorage=true;";
-            string queuename = "messagequeue";
+            string queuename = "messagesqueue";
 
             services.AddMvc()
                 .AddApplicationPart(typeof(ApiServiceAssembly).GetTypeInfo().Assembly)
@@ -36,18 +36,13 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
                 {
                     Version = "v1",
                     Title = "Service Fabric Ingest API",
-                    Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric",
-                    Contact = new Contact
-                    {
-                        Name = "Randheer and Gayan",
-                        Url = "https://github.com/gayankanishka/azure-service-fabric-tech-talk"
-                    }
+                    Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric"
                 });
             });
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
             cloudStorage.CreateQueueIfNotFoundAsync(queuename);
-            
+
             services
                 .AddSingleton(cloudStorage)
                 .AddScoped<IIngestBusiness, IngestBusiness>();
@@ -61,9 +56,8 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service Fabric Ingest API V1");
                 c.RoutePrefix = string.Empty;
