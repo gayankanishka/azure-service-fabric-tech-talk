@@ -37,14 +37,12 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
                     .Settings.Sections["TwilioConfigs"];
 
             string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
-            string queuename = azureConfigurationSection?.Parameters["MessagesQueueName"]?.Value;
             string accountSid = twilioConfigurationSection?.Parameters["AccountSid"]?.Value;
             string authToken = twilioConfigurationSection?.Parameters["AuthToken"]?.Value;
 
             IServiceCollection serviceCollection = new ServiceCollection();
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
-            cloudStorage.CreateQueueIfNotFoundAsync(queuename);
 
             ITwilioEngine twilioEngine = new TwilioEngine(accountSid, authToken);
 

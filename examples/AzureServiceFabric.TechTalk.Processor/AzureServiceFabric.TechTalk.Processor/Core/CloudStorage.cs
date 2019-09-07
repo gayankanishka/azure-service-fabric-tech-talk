@@ -12,7 +12,6 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
     {
         private readonly CloudStorageAccount cloudStorageAccount;
         private CloudQueueClient cloudQueueClient;
-        private CloudQueue queue;
 
         /// <summary>
         /// 
@@ -28,34 +27,28 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// 
         /// </summary>
         /// <param name="queueName"></param>
-        /// <returns></returns>
-        public async Task CreateQueueIfNotFoundAsync(string queueName)
-        {
-            queue = cloudQueueClient.GetQueueReference(queueName);
-            await queue.CreateIfNotExistsAsync();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task InsertQueueMessageAsync(string message)
+        public async Task InsertQueueMessageAsync(string queueName, string message)
         {
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
             CloudQueueMessage cloudQueueMessage = new CloudQueueMessage(message);
+
+            await queue.CreateIfNotExistsAsync();
+
             await queue.AddMessageAsync(cloudQueueMessage);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="queueName"></param>
         /// <returns></returns>
-        public async Task<CloudQueueMessage> GetQueueMessageAsync(string message)
+        public async Task<CloudQueueMessage> GetQueueMessageAsync(string queueName)
         {
-            CloudQueueMessage cloudQueueMessage = await queue.GetMessageAsync();
-            await queue.DeleteMessageAsync(cloudQueueMessage);
-            return cloudQueueMessage;
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+
+            return await queue.GetMessageAsync();
         }
 
         /// <summary>
@@ -65,17 +58,22 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// <returns></returns>
         public async Task<IEnumerable<CloudQueueMessage>> GetQueueMessagesAsync(string queueName, int messageCount)
         {
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+
             return await queue.GetMessagesAsync(messageCount);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="queueName"></param>
+        /// /// <param name="cloudQueueMessage"></param>
         /// <returns></returns>
-        public async Task DeleteQueueMessageAsync(CloudQueueMessage cloudQueueMessage)
+        public async Task DeleteQueueMessageAsync(string queueName, CloudQueueMessage cloudQueueMessage)
         {
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+
             await queue.DeleteMessageAsync(cloudQueueMessage);
-        } 
+        }
     }
 }

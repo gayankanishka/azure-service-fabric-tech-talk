@@ -3,7 +3,6 @@
   <Parameters>
     <Parameter Name="AzureServiceFabric.TechTalk.Processor.Service_InstanceCount" Value="-1" />
     <Parameter Name="StorageConnectionString" Value="" />
-    <Parameter Name="MessagesQueueName" Value="" />
     <Parameter Name="AccountSid" Value="" />
     <Parameter Name="AuthToken" Value="" />
   </Parameters>

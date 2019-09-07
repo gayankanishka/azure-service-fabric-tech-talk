@@ -3,7 +3,6 @@
   <Parameters>
     <Parameter Name="AzureServiceFabric.TechTalk.Processor.Service_InstanceCount" DefaultValue="-1" />
     <Parameter Name="StorageConnectionString" DefaultValue="" />
-    <Parameter Name="MessagesQueueName" DefaultValue="" />
     <Parameter Name="AccountSid" DefaultValue="" />
     <Parameter Name="AuthToken" DefaultValue="" />
   </Parameters>
@@ -17,7 +16,6 @@
         <Settings>
           <Section Name="AzureStorageConfigs">
             <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />
-            <Parameter Name="MessagesQueueName" Value="[MessagesQueueName]" />
           </Section>
           <Section Name="TwilioConfigs">
             <Parameter Name="AccountSid" Value="[AccountSid]" />

@@ -3,7 +3,6 @@
   <!-- Add your custom configuration sections and parameters here -->
   <Section Name="AzureStorageConfigs">
     <Parameter Name="StorageConnectionString" Value="" />
-    <Parameter Name="MessagesQueueName" Value="" />
   </Section>
   <Section Name="TwilioConfigs">
     <Parameter Name="AccountSid" Value="" />

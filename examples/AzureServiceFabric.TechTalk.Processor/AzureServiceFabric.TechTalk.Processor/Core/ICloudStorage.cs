@@ -13,35 +13,31 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// 
         /// </summary>
         /// <param name="queueName"></param>
-        /// <returns></returns>
-        Task CreateQueueIfNotFoundAsync(string queueName);
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task InsertQueueMessageAsync(string message);
-        
+        Task InsertQueueMessageAsync(string queueName, string message);
+
         /// <summary>
         ///
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="queueName"></param>
         /// <returns></returns>
-        Task<CloudQueueMessage> GetQueueMessageAsync(string message);
+        Task<CloudQueueMessage> GetQueueMessageAsync(string queueName);
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="queueName"></param>
+        /// <param name="messageCount"></param>
         /// <returns></returns>
         Task<IEnumerable<CloudQueueMessage>> GetQueueMessagesAsync(string queueName, int messageCount);
 
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="queueName"></param>
         /// <param name="cloudQueueMessage"></param>
         /// <returns></returns>
-        Task DeleteQueueMessageAsync(CloudQueueMessage cloudQueueMessage);
+        Task DeleteQueueMessageAsync(string queueName, CloudQueueMessage cloudQueueMessage);
     }
 }

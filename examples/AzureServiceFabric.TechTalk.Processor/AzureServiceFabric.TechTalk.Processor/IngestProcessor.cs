@@ -12,7 +12,7 @@ namespace AzureServiceFabric.TechTalk.Processor
         #region Variables
 
         private const int MESSAGE_BATCH_COUNT = 10;
-        private const string QUEUE_NAME = "messagequeue";
+        private const string QUEUE_NAME = "messagesqueue";
         private const int MESSAGE_RETRY_COUNT = 3;
 
         private readonly ICloudStorage cloudStorage;
@@ -50,14 +50,15 @@ namespace AzureServiceFabric.TechTalk.Processor
         {
             if (cloudQueueMessage.DequeueCount > MESSAGE_RETRY_COUNT)
             {
-                await cloudStorage.DeleteQueueMessageAsync(cloudQueueMessage);
+                await cloudStorage.DeleteQueueMessageAsync(QUEUE_NAME, cloudQueueMessage);
+                return;
             }
 
-            Message message = JsonConvert.DeserializeObject<Message>(cloudQueueMessage.AsString);
+            Message message = await Task.Run(() => JsonConvert.DeserializeObject<Message>(cloudQueueMessage.AsString));
 
             await twilioEngine.SendMessageAsync(message);
 
-            await cloudStorage.DeleteQueueMessageAsync(cloudQueueMessage);
+            await cloudStorage.DeleteQueueMessageAsync(QUEUE_NAME, cloudQueueMessage);
         }
 
         #endregion
