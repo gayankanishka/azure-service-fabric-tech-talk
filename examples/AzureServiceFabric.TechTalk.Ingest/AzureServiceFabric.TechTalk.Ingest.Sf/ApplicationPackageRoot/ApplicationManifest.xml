@@ -4,7 +4,6 @@
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_InstanceCount" DefaultValue="-1" />
     <Parameter Name="StorageConnectionString" DefaultValue="" />
-    <Parameter Name="MessagesQueueName" DefaultValue="" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
@@ -16,7 +15,6 @@
         <Settings>
           <Section Name="AzureStorageConfigs">
             <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />
-            <Parameter Name="MessagesQueueName" Value="[MessagesQueueName]" />
           </Section>
         </Settings>
       </ConfigOverride>

@@ -3,6 +3,5 @@
   <Parameters>
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_InstanceCount" Value="-1" />
     <Parameter Name="StorageConnectionString" Value="" />
-    <Parameter Name="MessagesQueueName" Value="" />
   </Parameters>
 </Application>

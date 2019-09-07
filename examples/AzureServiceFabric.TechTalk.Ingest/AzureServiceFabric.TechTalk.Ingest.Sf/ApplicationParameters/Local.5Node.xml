@@ -4,6 +4,5 @@
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_ASPNETCORE_ENVIRONMENT" Value="Development" />
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_InstanceCount" Value="1" />
     <Parameter Name="StorageConnectionString" Value="UseDevelopmentStorage=true;" />
-    <Parameter Name="MessagesQueueName" Value="messagesqueue" />
   </Parameters>
 </Application>
