@@ -3,14 +3,24 @@
   <Parameters>
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_ASPNETCORE_ENVIRONMENT" DefaultValue="" />
     <Parameter Name="AzureServiceFabric.TechTalk.Ingest.API_InstanceCount" DefaultValue="-1" />
-    <Parameter Name="StorageConnectionString" DefaultValue="UseDevelopmentStorage=true;" />
+    <Parameter Name="StorageConnectionString" DefaultValue="" />
+    <Parameter Name="MessagesQueueName" DefaultValue="" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="AzureServiceFabric.TechTalk.Ingest.APIPkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="AzureStorageConfigs">
+            <Parameter Name="StorageConnectionString" Value="[StorageConnectionString]" />
+            <Parameter Name="MessagesQueueName" Value="[MessagesQueueName]" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
     <EnvironmentOverrides CodePackageRef="code">
       <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[AzureServiceFabric.TechTalk.Ingest.API_ASPNETCORE_ENVIRONMENT]" />
     </EnvironmentOverrides>

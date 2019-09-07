@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Reflection;
 using AzureServiceFabric.TechTalk.Ingest.Core;
+using System.Fabric;
 
 namespace AzureServiceFabric.TechTalk.Ingest.API
 {
@@ -22,9 +23,12 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO: get from config
-            string storageAccountKey = "UseDevelopmentStorage=true;";
-            string queuename = "messagesqueue";
+            var azureConfigurationSection = FabricRuntime.GetActivationContext()?
+                    .GetConfigurationPackageObject("Config")?
+                    .Settings.Sections["AzureStorageConfigs"];
+
+            string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
+            string queuename = azureConfigurationSection?.Parameters["MessagesQueueName"]?.Value;
 
             services.AddMvc()
                 .AddApplicationPart(typeof(ApiServiceAssembly).GetTypeInfo().Assembly)
