@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Fabric;
+using System.Fabric.Description;
 using System.Threading;
 using System.Threading.Tasks;
 using AzureServiceFabric.TechTalk.Processor.Core;
@@ -28,14 +29,16 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            var azureConfigurationSection = FabricRuntime.GetActivationContext()?
+            // Gets the settings section
+            ConfigurationSection azureConfigurationSection = FabricRuntime.GetActivationContext()?
                     .GetConfigurationPackageObject("Config")?
                     .Settings.Sections["AzureStorageConfigs"];
 
-            var twilioConfigurationSection = FabricRuntime.GetActivationContext()?
+            ConfigurationSection twilioConfigurationSection = FabricRuntime.GetActivationContext()?
                     .GetConfigurationPackageObject("Config")?
                     .Settings.Sections["TwilioConfigs"];
 
+            // Gets the settings from the config file
             string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
             string accountSid = twilioConfigurationSection?.Parameters["AccountSid"]?.Value;
             string authToken = twilioConfigurationSection?.Parameters["AuthToken"]?.Value;
@@ -76,6 +79,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
 
                 cancellationToken.ThrowIfCancellationRequested();
 
+                // Could increase or decrease the queue processing interval here
                 await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
         }

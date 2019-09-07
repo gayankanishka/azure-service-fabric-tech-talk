@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace AzureServiceFabric.TechTalk.Processor
 {
+    /// <summary>
+    /// Processor for the ingested messages
+    /// </summary>
     public class IngestProcessor
     {
         #region Variables
@@ -22,6 +25,11 @@ namespace AzureServiceFabric.TechTalk.Processor
 
         #region Constructor
 
+        /// <summary>
+        /// Constructor of the ingest processor
+        /// </summary>
+        /// <param name="cloudStorage">Injected cloud storage account</param>
+        /// <param name="twilioEngine">Injected Twilio engine</param>
         public IngestProcessor(ICloudStorage cloudStorage, ITwilioEngine twilioEngine)
         {
             this.cloudStorage = cloudStorage;
@@ -32,6 +40,10 @@ namespace AzureServiceFabric.TechTalk.Processor
 
         #region Methods
 
+        /// <summary>
+        /// Retrieves messages from the Storage queue and sends for processing
+        /// </summary>
+        /// <returns></returns>
         public async Task ProcessIngestMessages()
         {
             IEnumerable<CloudQueueMessage> queueMessages = await cloudStorage.GetQueueMessagesAsync(QUEUE_NAME, MESSAGE_BATCH_COUNT);
@@ -46,6 +58,7 @@ namespace AzureServiceFabric.TechTalk.Processor
             await Task.WhenAll(taskList);
         }
 
+        // Process the queue message and sends to the Twilio
         private async Task ProceedToTwilio(CloudQueueMessage cloudQueueMessage)
         {
             if (cloudQueueMessage.DequeueCount > MESSAGE_RETRY_COUNT)
