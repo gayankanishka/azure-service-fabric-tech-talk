@@ -15,7 +15,6 @@ namespace AzureServiceFabric.TechTalk.Ingest.Models
         [Required]
         public string Body { get; set; }
 
-        [JsonIgnore]
         public Guid TransactionId { get; set; }
     }
 }
