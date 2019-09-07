@@ -1,60 +1,92 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 
 namespace AzureServiceFabric.TechTalk.Ingest.Core
 {
     /// <summary>
-    /// 
+    /// Handles all of the cloud storage related operations
     /// </summary>
     public class CloudStorage : ICloudStorage
     {
+        #region Variables
+
         private readonly CloudStorageAccount cloudStorageAccount;
         private CloudQueueClient cloudQueueClient;
-        private CloudQueue queue;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
-        /// 
+        /// Constructs with a cloud storage connection string
         /// </summary>
-        /// <param name="connectionString"></param>
+        /// <param name="connectionString">Cloud storage account connection string</param>
         public CloudStorage(string connectionString)
         {
             cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
             cloudQueueClient = cloudStorageAccount.CreateCloudQueueClient();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="queueName"></param>
-        /// <returns></returns>
-        public async Task CreateQueueIfNotFoundAsync(string queueName)
-        {
-            queue = cloudQueueClient.GetQueueReference(queueName);
-            await queue.CreateIfNotExistsAsync();
-        }
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// 
+        /// Inserts a message into the queue
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="queueName">Name of the queue</param>
+        /// <param name="message">Actual message</param>
         /// <returns></returns>
-        public async Task InsertQueueMessageAsync(string message)
+        public async Task InsertQueueMessageAsync(string queueName, string message)
         {
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
             CloudQueueMessage cloudQueueMessage = new CloudQueueMessage(message);
+
+            await queue.CreateIfNotExistsAsync();
+
             await queue.AddMessageAsync(cloudQueueMessage);
         }
 
         /// <summary>
-        /// 
+        /// Gets a single message from the queue
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public async Task<CloudQueueMessage> GetQueueMessageAsync(string message)
+        /// <param name="queueName">Name of the queue</param>
+        /// <returns>Retrieved message from the queue</returns>
+        public async Task<CloudQueueMessage> GetQueueMessageAsync(string queueName)
         {
-            CloudQueueMessage cloudQueueMessage = await queue.GetMessageAsync();
-            await queue.DeleteMessageAsync(cloudQueueMessage);
-            return cloudQueueMessage;
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+
+            return await queue.GetMessageAsync();
         }
+
+        /// <summary>
+        /// Gets list of message from the queue
+        /// </summary>
+        /// <param name="queueName">Name of the queue</param>
+        /// <param name="messageCount">Message batch size</param>
+        /// <returns>List of messages that retrieved from the queue</returns>
+        public async Task<IEnumerable<CloudQueueMessage>> GetQueueMessagesAsync(string queueName, int messageCount)
+        {
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+
+            return await queue.GetMessagesAsync(messageCount);
+        }
+
+        /// <summary>
+        /// Deletes a message form the queue
+        /// </summary>
+        /// <param name="queueName">Name of the queue</param>
+        /// <param name="cloudQueueMessage">Message that need to be deleted</param>
+        /// <returns></returns>
+        public async Task DeleteQueueMessageAsync(string queueName, CloudQueueMessage cloudQueueMessage)
+        {
+            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+
+            await queue.DeleteMessageAsync(cloudQueueMessage);
+        }
+
+        #endregion
     }
 }

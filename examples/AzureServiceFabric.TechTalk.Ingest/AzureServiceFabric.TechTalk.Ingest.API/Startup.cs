@@ -23,12 +23,13 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Gets the settings section
             var azureConfigurationSection = FabricRuntime.GetActivationContext()?
                     .GetConfigurationPackageObject("Config")?
                     .Settings.Sections["AzureStorageConfigs"];
 
+            // Gets the settings from the config file
             string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
-            string queuename = azureConfigurationSection?.Parameters["MessagesQueueName"]?.Value;
 
             services.AddMvc()
                 .AddApplicationPart(typeof(ApiServiceAssembly).GetTypeInfo().Assembly)
@@ -45,7 +46,6 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
             });
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
-            cloudStorage.CreateQueueIfNotFoundAsync(queuename);
 
             services
                 .AddSingleton(cloudStorage)

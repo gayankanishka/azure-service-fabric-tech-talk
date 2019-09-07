@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace AzureServiceFabric.TechTalk.Ingest.API.Controllers
 {
     /// <summary>
-    /// 
+    /// Ingest controller of the API
     /// </summary>
     [ApiController]
     [Produces("application/json")]
@@ -17,7 +17,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API.Controllers
     {
         #region Variables
 
-        private readonly IIngestBusiness ingestBusiness;
+        private readonly IIngestBusiness _ingestBusiness;
 
         #endregion
 
@@ -25,7 +25,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API.Controllers
 
         public IngestController(IIngestBusiness ingestBusiness)
         {
-            this.ingestBusiness = ingestBusiness;
+            _ingestBusiness = ingestBusiness;
         }
 
         #endregion
@@ -33,9 +33,9 @@ namespace AzureServiceFabric.TechTalk.Ingest.API.Controllers
         #region Methods
 
         /// <summary>
-        /// 
+        /// Posts a message contract
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message contract</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> PostMessageAsync([FromBody] Message message)
@@ -44,7 +44,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API.Controllers
             {
                 message.TransactionId = Guid.NewGuid();
 
-                await ingestBusiness.IngestIntoStorageAsync(message);
+                await _ingestBusiness.IngestIntoStorageAsync(message);
 
                 return Accepted(message.TransactionId);
             }
