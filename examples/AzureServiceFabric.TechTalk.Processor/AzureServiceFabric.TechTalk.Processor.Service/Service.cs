@@ -15,7 +15,6 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
     /// </summary>
     internal sealed class Service : StatelessService
     {
-        private const double QUEUE_PROCESSING_INTERVAL = 10;
         private ServiceProvider serviceProvider;
         private IngestProcessor ingestProcessor;
 
@@ -29,13 +28,19 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            // TODO: Need to get these configs from table storage
-            string storageAccountKey = "UseDevelopmentStorage=true;";
-            string queuename = "messagesqueue";
-            // Add your twilio account ID's
-            string accountSid = "";
-            string authToken = "";
-           
+            var azureConfigurationSection = FabricRuntime.GetActivationContext()?
+                    .GetConfigurationPackageObject("Config")?
+                    .Settings.Sections["AzureStorageConfigs"];
+
+            var twilioConfigurationSection = FabricRuntime.GetActivationContext()?
+                    .GetConfigurationPackageObject("Config")?
+                    .Settings.Sections["TwilioConfigs"];
+
+            string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
+            string queuename = azureConfigurationSection?.Parameters["MessagesQueueName"]?.Value;
+            string accountSid = twilioConfigurationSection?.Parameters["AccountSid"]?.Value;
+            string authToken = twilioConfigurationSection?.Parameters["AuthToken"]?.Value;
+
             IServiceCollection serviceCollection = new ServiceCollection();
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
@@ -73,7 +78,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await Task.Delay(TimeSpan.FromSeconds(QUEUE_PROCESSING_INTERVAL), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
         }
     }

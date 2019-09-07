@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/AzureServiceFabric.TechTalk.Processor.Sf" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
-    <Parameter Name="AzureServiceFabric.TechTalk.Processor.Service_InstanceCount" Value="1" />
+    <Parameter Name="AzureServiceFabric.TechTalk.Processor.Service_InstanceCount" Value="2" />
+    <Parameter Name="StorageConnectionString" Value="UseDevelopmentStorage=true;" />
+    <Parameter Name="MessagesQueueName" Value="messagesqueue" />
+    <Parameter Name="AccountSid" Value="" />
+    <Parameter Name="AuthToken" Value="" />
   </Parameters>
 </Application>
