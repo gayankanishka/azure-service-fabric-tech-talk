@@ -1,4 +1,5 @@
-﻿using AzureServiceFabric.TechTalk.Ingest.API.Business;
+﻿using System;
+using AzureServiceFabric.TechTalk.Ingest.API.Business;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Reflection;
 using AzureServiceFabric.TechTalk.Ingest.Core;
 using System.Fabric;
+using System.IO;
+using AzureServiceFabric.TechTalk.Ingest.API.Controllers;
 
 namespace AzureServiceFabric.TechTalk.Ingest.API
 {
@@ -43,6 +46,10 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
                     Title = "Service Fabric Ingest API",
                     Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric"
                 });
+
+                string xmlFile = $"{Assembly.GetAssembly(typeof(IngestController)).GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
@@ -62,10 +69,10 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
 
             app.UseSwagger()
                 .UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service Fabric Ingest API V1");
-                c.RoutePrefix = string.Empty;
-            });
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service Fabric Ingest API V1");
+                    c.RoutePrefix = string.Empty;
+                });
 
             app.UseMvc();
         }
