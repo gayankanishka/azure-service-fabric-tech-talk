@@ -44,7 +44,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
                 {
                     Version = "v1",
                     Title = "Service Fabric Ingest API",
-                    Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric"
+                    Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric. This API will ingest a message contract and put it into a storage queue to process later."
                 });
 
                 string xmlFile = $"{Assembly.GetAssembly(typeof(IngestController)).GetName().Name}.xml";
