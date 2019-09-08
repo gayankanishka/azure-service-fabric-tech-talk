@@ -12,7 +12,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API.Business
     {
         #region Variables
 
-        private const string QUEUE_NAME = "messagesqueue";
+        private const string QueueName = "messagesqueue";
         private readonly ICloudStorage _cloudStorage;
 
         #endregion
@@ -39,7 +39,7 @@ namespace AzureServiceFabric.TechTalk.Ingest.API.Business
         /// <returns></returns>
         public async Task IngestIntoStorageAsync(Message message)
         {
-            await _cloudStorage.InsertQueueMessageAsync(QUEUE_NAME, JsonConvert.SerializeObject(message));
+            await _cloudStorage.InsertQueueMessageAsync(QueueName, JsonConvert.SerializeObject(message));
         }
 
         #endregion
