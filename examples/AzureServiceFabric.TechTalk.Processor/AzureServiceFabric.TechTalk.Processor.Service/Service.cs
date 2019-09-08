@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Linq;
+using System.Fabric.Description;
 using System.Threading;
 using System.Threading.Tasks;
 using AzureServiceFabric.TechTalk.Processor.Core;
@@ -16,9 +16,8 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
     /// </summary>
     internal sealed class Service : StatelessService
     {
-        private const double QUEUE_PROCESSING_INTERVAL = 10;
-        private ServiceProvider serviceProvider;
-        private IngestProcessor ingestProcessor;
+        private ServiceProvider _serviceProvider;
+        private IngestProcessor _ingestProcessor;
 
         public Service(StatelessServiceContext context)
             : base(context)
@@ -30,17 +29,23 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            // TODO: Need to get these configs from table storage
-            string storageAccountKey = "UseDevelopmentStorage=true;";
-            string queuename = "messagequeue";
-            // Add your twilio account ID's
-            string accountSid = "";
-            string authToken = "";
-           
+            // Gets the settings section
+            ConfigurationSection azureConfigurationSection = FabricRuntime.GetActivationContext()?
+                    .GetConfigurationPackageObject("Config")?
+                    .Settings.Sections["AzureStorageConfigs"];
+
+            ConfigurationSection twilioConfigurationSection = FabricRuntime.GetActivationContext()?
+                    .GetConfigurationPackageObject("Config")?
+                    .Settings.Sections["TwilioConfigs"];
+
+            // Gets the settings from the config file
+            string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
+            string accountSid = twilioConfigurationSection?.Parameters["AccountSid"]?.Value;
+            string authToken = twilioConfigurationSection?.Parameters["AuthToken"]?.Value;
+
             IServiceCollection serviceCollection = new ServiceCollection();
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
-            cloudStorage.CreateQueueIfNotFoundAsync(queuename);
 
             ITwilioEngine twilioEngine = new TwilioEngine(accountSid, authToken);
 
@@ -48,7 +53,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
                 .AddSingleton(twilioEngine)
                 .AddTransient<IngestProcessor, IngestProcessor>();
 
-            serviceProvider = serviceCollection.BuildServiceProvider();
+            _serviceProvider = serviceCollection.BuildServiceProvider();
 
             return new ServiceInstanceListener[0];
         }
@@ -59,22 +64,23 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            ingestProcessor = serviceProvider.GetService<IngestProcessor>();
+            _ingestProcessor = _serviceProvider.GetService<IngestProcessor>();
 
             while (true)
             {
                 try
                 {
-                    await ingestProcessor.ProcessIngestMessages();
+                    await _ingestProcessor.ProcessIngestMessages();
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     // Not throwing in order to run the service infinity
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await Task.Delay(TimeSpan.FromSeconds(QUEUE_PROCESSING_INTERVAL), cancellationToken);
+                // Could increase or decrease the queue processing interval here
+                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
             }
         }
     }

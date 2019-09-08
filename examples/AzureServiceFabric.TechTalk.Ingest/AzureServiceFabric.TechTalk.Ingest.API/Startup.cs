@@ -1,4 +1,5 @@
-﻿using AzureServiceFabric.TechTalk.Ingest.API.Business;
+﻿using System;
+using AzureServiceFabric.TechTalk.Ingest.API.Business;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Reflection;
 using AzureServiceFabric.TechTalk.Ingest.Core;
+using System.Fabric;
+using System.IO;
+using AzureServiceFabric.TechTalk.Ingest.API.Controllers;
 
 namespace AzureServiceFabric.TechTalk.Ingest.API
 {
@@ -22,9 +26,13 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO: get from config
-            string storageAccountKey = "UseDevelopmentStorage=true;";
-            string queuename = "messagequeue";
+            // Gets the settings section
+            var azureConfigurationSection = FabricRuntime.GetActivationContext()?
+                    .GetConfigurationPackageObject("Config")?
+                    .Settings.Sections["AzureStorageConfigs"];
+
+            // Gets the settings from the config file
+            string storageAccountKey = azureConfigurationSection?.Parameters["StorageConnectionString"]?.Value;
 
             services.AddMvc()
                 .AddApplicationPart(typeof(ApiServiceAssembly).GetTypeInfo().Assembly)
@@ -36,18 +44,16 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
                 {
                     Version = "v1",
                     Title = "Service Fabric Ingest API",
-                    Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric",
-                    Contact = new Contact
-                    {
-                        Name = "Randheer and Gayan",
-                        Url = "https://github.com/gayankanishka/azure-service-fabric-tech-talk"
-                    }
+                    Description = "This is a simple ASP.NET Core web API to showcase Azure service fabric. This API will ingest a message contract and put it into a storage queue to process later."
                 });
+
+                string xmlFile = $"{Assembly.GetAssembly(typeof(IngestController)).GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             ICloudStorage cloudStorage = new CloudStorage(storageAccountKey);
-            cloudStorage.CreateQueueIfNotFoundAsync(queuename);
-            
+
             services
                 .AddSingleton(cloudStorage)
                 .AddScoped<IIngestBusiness, IngestBusiness>();
@@ -61,13 +67,12 @@ namespace AzureServiceFabric.TechTalk.Ingest.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service Fabric Ingest API V1");
-                c.RoutePrefix = string.Empty;
-            });
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service Fabric Ingest API V1");
+                    c.RoutePrefix = string.Empty;
+                });
 
             app.UseMvc();
         }
