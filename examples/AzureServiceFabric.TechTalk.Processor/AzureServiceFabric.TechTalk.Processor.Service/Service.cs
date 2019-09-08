@@ -16,8 +16,8 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
     /// </summary>
     internal sealed class Service : StatelessService
     {
-        private ServiceProvider serviceProvider;
-        private IngestProcessor ingestProcessor;
+        private ServiceProvider _serviceProvider;
+        private IngestProcessor _ingestProcessor;
 
         public Service(StatelessServiceContext context)
             : base(context)
@@ -53,7 +53,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
                 .AddSingleton(twilioEngine)
                 .AddTransient<IngestProcessor, IngestProcessor>();
 
-            serviceProvider = serviceCollection.BuildServiceProvider();
+            _serviceProvider = serviceCollection.BuildServiceProvider();
 
             return new ServiceInstanceListener[0];
         }
@@ -64,13 +64,13 @@ namespace AzureServiceFabric.TechTalk.Processor.Service
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            ingestProcessor = serviceProvider.GetService<IngestProcessor>();
+            _ingestProcessor = _serviceProvider.GetService<IngestProcessor>();
 
             while (true)
             {
                 try
                 {
-                    await ingestProcessor.ProcessIngestMessages();
+                    await _ingestProcessor.ProcessIngestMessages();
                 }
                 catch (Exception)
                 {

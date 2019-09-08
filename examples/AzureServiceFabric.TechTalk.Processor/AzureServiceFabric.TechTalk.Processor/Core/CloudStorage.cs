@@ -12,8 +12,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
     {
         #region Variables
 
-        private readonly CloudStorageAccount cloudStorageAccount;
-        private CloudQueueClient cloudQueueClient;
+        private readonly CloudQueueClient _cloudQueueClient;
 
         #endregion
 
@@ -25,8 +24,8 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// <param name="connectionString">Cloud storage account connection string</param>
         public CloudStorage(string connectionString)
         {
-            cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
-            cloudQueueClient = cloudStorageAccount.CreateCloudQueueClient();
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
+            _cloudQueueClient = cloudStorageAccount.CreateCloudQueueClient();
         }
 
         #endregion
@@ -41,7 +40,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// <returns></returns>
         public async Task InsertQueueMessageAsync(string queueName, string message)
         {
-            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+            CloudQueue queue = _cloudQueueClient.GetQueueReference(queueName);
             CloudQueueMessage cloudQueueMessage = new CloudQueueMessage(message);
 
             await queue.CreateIfNotExistsAsync();
@@ -56,7 +55,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// <returns>Retrieved message from the queue</returns>
         public async Task<CloudQueueMessage> GetQueueMessageAsync(string queueName)
         {
-            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+            CloudQueue queue = _cloudQueueClient.GetQueueReference(queueName);
 
             return await queue.GetMessageAsync();
         }
@@ -69,7 +68,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// <returns>List of messages that retrieved from the queue</returns>
         public async Task<IEnumerable<CloudQueueMessage>> GetQueueMessagesAsync(string queueName, int messageCount)
         {
-            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+            CloudQueue queue = _cloudQueueClient.GetQueueReference(queueName);
 
             return await queue.GetMessagesAsync(messageCount);
         }
@@ -82,7 +81,7 @@ namespace AzureServiceFabric.TechTalk.Processor.Core
         /// <returns></returns>
         public async Task DeleteQueueMessageAsync(string queueName, CloudQueueMessage cloudQueueMessage)
         {
-            CloudQueue queue = cloudQueueClient.GetQueueReference(queueName);
+            CloudQueue queue = _cloudQueueClient.GetQueueReference(queueName);
 
             await queue.DeleteMessageAsync(cloudQueueMessage);
         }
