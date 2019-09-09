@@ -3,7 +3,7 @@
 
 Prototype project to showcase capabilities of Azure Service fabric. Project integrates .NET Core web API and stateless service, Azure storage account, Twilio API and Azure service fabric. Built on top of Microservice queue architecture. This project is capable of running fully on your local DEV environment.
 
-<img src="https://contextere.com/wp-primary/wp-content/uploads/2017/09/MS-Service-Fabric_logo-title-1000x562.jpg" alt="service fabric logo"/>
+<img src="https://miro.medium.com/max/3968/0*2ygciPbeUuMBhbP9.png" alt="service fabric logo"/>
 
 What's included:
 
